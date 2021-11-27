@@ -3,6 +3,7 @@ pipeline {
     environment {
        
         DOCKER_HUB_CREDS = credentials("DOCKER_HUB_CREDS")
+        DATABASE_URI = cresentials("DATABASE_URI")
        
     }
     stages {
