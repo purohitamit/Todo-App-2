@@ -1,73 +1,49 @@
-from application import app, db
-from application.models import Tasks
-from flask import render_template, request, redirect, url_for, Response, jsonify
+from application import app
+from flask import render_template, request, redirect, url_for, jsonify
+from application.forms import TaskForm
+import requests
+
+backend_host = "todo-app_backend:5000"
+@app.route('/')
+@app.route('/home')
+def home():
+    all_tasks = requests.get(f"http://{backend_host}/read/allTasks").json()
+    return render_template('index.html', title = "Home", all_tasks=all_tasks["tasks"])
 
 
-@app.route('/create/task', methods= ['POST'])
+@app.route('/create/task', methods= ['GET', 'POST'])
 def create_task():
-    package = request.json
-    new_task = Tasks(description=package["description"])
-    db.session.add(new_task)
-    db.session.commit()
-    return Response(f'Added task with description: {new_task.description}', mimetype='text/plain')
-    
-@app.route('/read/allTasks', methods=["GET"])
-def read_tasks():
-    all_tasks = Tasks.query.all()
-    
-    tasks_dict = {"tasks": []}
-    
-    for task in all_tasks:
-        tasks_dict ["tasks"].append(
-            {
-                "id": task.id,
-                "description": task.description, 
-                "completed": task.completed
-            }
-        )
-    return jsonify(tasks_dict)
+    form = TaskForm()
+    if request.method == "POST":
+        response = requests.post(f"http://{backend_host}/create/task", json={"description": form.description.data} )
+        return redirect(url_for('home'))
+    return render_template("create_form.html", title = "Add a new task", form=form)
 
-@app.route('/read/task/<int:id>', methods=["GET"])
-def read_task(id):
-    task = Tasks.query.get(id)
-    
-    tasks_dict =  {
-                     "id": task.id,
-                      "description": task.description, 
-                      "completed": task.completed
-                }
-    
-    return jsonify(tasks_dict)
 
-@app.route('/update/task/<int:id>', methods = ['PUT'])
+
+@app.route('/update/task/<int:id>', methods = ['GET', 'POST'])
 def update_task(id):
-    package =request.json
-    task = Tasks.query.get(id)
-    task.description = package["description"]
-    db.session.commit()
-    return Response(f'Updated task (ID: {id}) description: {task.description}', mimetype='text/plain')
+    form = TaskForm()
+    task = requests.get(f"http://{backend_host}/read/task/{id}").json()
+    if request.method == "POST":
+        response = requests.put(f"http://{backend_host}/update/task/{id}", json={"description": form.description.data} )
+        return redirect(url_for('home'))
 
-    
+    return render_template("update_task.html", task=task, form=form, title = "Update")
 
-@app.route('/delete/task/<int:id>', methods=["DELETE"])
+
+@app.route('/delete/task/<int:id>')
 def delete_task(id):
-    task = Tasks.query.get(id)
-    db.session.delete(task)
-    db.session.commit()
-    return Response(f'Task with (ID: {id}), description: {task.description} is deleted', mimetype='text/plain')
+    response = requests.delete(f"http://{backend_host}/delete/task/{id}")
+    return redirect(url_for('home'))
 
-
-@app.route('/complete/task/<int:id>', methods=["PUT"])
+@app.route('/complete/task/<int:id>')
 def complete_task(id):
-    task = Tasks.query.get(id)
-    task.completed = True
-    db.session.commit()
-    return Response(f'Task with (ID: {id}), description: {task.description} is completed', mimetype='text/plain')
+    response = requests.put(f"http://{backend_host}/complete/task/{id}")
+    return redirect(url_for('home'))
 
-@app.route('/incomplete/task/<int:id>', methods=["PUT"])
+@app.route('/incomplete/task/<int:id>')
 def incomplete_task(id):
-    task = Tasks.query.get(id)
-    task.completed = False
-    db.session.commit()
-    return Response(f'Task with (ID: {id}), description: {task.description} was not complete so it\'s thrown back to incomplete tasks', mimetype='text/plain')
+    response = requests.put(f"http://{backend_host}/incomplete/task/{id}")
+    return redirect(url_for('home'))
 

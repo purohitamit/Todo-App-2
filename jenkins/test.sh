@@ -1,3 +1,5 @@
 #!/bin/bash
 
-echo "Test stage 2"
+
+echo "hello test"
+
