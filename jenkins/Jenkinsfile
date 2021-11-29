@@ -4,7 +4,7 @@ pipeline {
        
         DOCKER_HUB_CREDS = credentials("DOCKER_HUB_CREDS")
         DATABASE_URI = credentials("DATABASE_URI")
-       
+ 
     }
     stages {
         stage('Setup') {
@@ -30,6 +30,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh "bash jenkins/deploy.sh"
+
                 echo "Hello Amit Purohit"
             }
         }
