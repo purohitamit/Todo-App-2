@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 echo "Deploy stage"
 
 scp docker-compose.yaml jenkins@swarm-manager:/home/jenkins/docker-compose.yaml
