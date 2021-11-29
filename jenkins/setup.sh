@@ -8,10 +8,12 @@ sudo apt-get update
 sudo apt-get install -y curl jq python3-venv
 
 # install docker
-
+if [ ! -f "/usr/bin/docker" ]; then
 curl https://get.docker.com | sudo bash
 sudo usermod -aG docker jenkins
 newgrp docker
+fi
+
 
 #install docker compose
 
