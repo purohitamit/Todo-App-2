@@ -2,7 +2,7 @@ version: "3.8"
 services:
   frontend:
     build: ./frontend
-    image: amitpurohit29/todo-app-frontend:latest
+    image: todo-app-frontend:latest
     container_name: todo-app-frontend
     ports:
     - target: 5000
@@ -10,7 +10,7 @@ services:
   
   backend:
     build: ./backend
-    image: amitpurohit29/todo-app-backend:latest
+    image: todo-app-backend:latest
     container_name: todo-app-backend
     environment:
       DATABASE_URI:
