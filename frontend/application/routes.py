@@ -1,7 +1,7 @@
 from application import app
-from flask import render_template, request, redirect, url_for, jsonify
+from flask import render_template, requests, redirect, url_for, jsonify
 from application.forms import TaskForm
-import requests
+
 
 backend_host = "todo-app_backend:5000"
 @app.route('/')
