@@ -7,7 +7,7 @@ backend_host = "todo-app_backend:5000"
 @app.route('/')
 @app.route('/home')
 def home():
-    all_tasks = requests.get("http://{backend_host}/read/allTasks").json()
+    all_tasks = requests.get(f"http://{backend_host}/read/allTasks").json()
     return render_template('index.html', title = "Home", all_tasks=all_tasks["tasks"])
 
 
@@ -15,7 +15,7 @@ def home():
 def create_task():
     form = TaskForm()
     if request.method == "POST":
-        response = requests.post("http://{backend_host}/create/task", json={"description": form.description.data} )
+        response = requests.post(f"http://{backend_host}/create/task", json={"description": form.description.data} )
         return redirect(url_for('home'))
     return render_template("create_form.html", title = "Add a new task", form=form)
 
